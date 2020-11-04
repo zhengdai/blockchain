@@ -157,7 +157,7 @@ func (bc *Blockchain) FindUnspentTransactions(pubKeyHash []byte) []Transaction {
 		for _, tx := range block.Transactions {
 			txID := hex.EncodeToString(tx.ID)
 		Outputs:
-			for outIdx, out := range tx.VOut {
+			for outIdx, out := range tx.Vout {
 				if spentTXOs[txID] != nil {
 					for _, spentOut := range spentTXOs[txID] {
 						if spentOut == outIdx {
@@ -194,7 +194,7 @@ func (bc *Blockchain) FindSpendableOutputs(pubKeyHash []byte, amount int) (int, 
 Work:
 	for _, tx := range unspentTXs {
 		txID := hex.EncodeToString(tx.ID)
-		for outIdx, out := range tx.VOut {
+		for outIdx, out := range tx.Vout {
 			if out.IsLockedWithKey(pubKeyHash) && accumulated < amount {
 				accumulated += out.Value
 				unspendOutputs[txID] = append(unspendOutputs[txID], outIdx)
@@ -227,8 +227,8 @@ func (bc *Blockchain) FindUTXO(pubKeyHash []byte) []TXOutput {
 	var UTXOs []TXOutput
 	unspentTransactions := bc.FindUnspentTransactions(pubKeyHash)
 	for _, tx := range unspentTransactions {
-		for _, out := range tx.VOut {
-			if out.isLockedWithKey(pubKeyHash) {
+		for _, out := range tx.Vout {
+			if out.IsLockedWithKey(pubKeyHash) {
 				UTXOs = append(UTXOs, out)
 			}
 		}

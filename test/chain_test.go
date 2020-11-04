@@ -11,7 +11,7 @@ import (
 func TestChain(t *testing.T) {
 	bc := chain.NewBlockchain()
 	defer bc.Db.Close()
-	cli := chain.CLI{bc}
+	cli := chain.CLI{}
 	cli.Run()
 }
 

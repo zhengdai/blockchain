@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"strconv"
 )
 
 type CLI struct {
@@ -115,55 +114,4 @@ func (cli *CLI) Run() {
 		}
 		cli.send(*sendFrom, *sendTo, *sendAmount)
 	}
-}
-
-func (cli *CLI) createBlockchain(address string) {
-	if !ValidateAddress(address) {
-		log.Panic("ERROR: Address is not valid")
-	}
-	bc := CreateBlockchain(address)
-	bc.Db.Close()
-	fmt.Println("Create block chain Done!")
-}
-
-func (cli *CLI) createWallet() {
-	wallets, _ := NewWallets()
-	address := wallets.CreateWallet()
-	wallets.SaveToFile()
-	fmt.Printf("Your new address: %s\n", address)
-}
-
-func (cli *CLI) getBalance(address string) {
-	bc := NewBlockchain()
-	defer bc.Db.Close()
-	balance := 0
-	UTXOs := bc.FindUTXO(address)
-	for _, out := range UTXOs {
-		balance += out.Value
-	}
-	fmt.Printf("Balance of '%s': %d\n", address, balance)
-}
-
-func (cli *CLI) printChain() {
-	bc := NewBlockchain()
-	defer bc.Db.Close()
-	bci := bc.Iterator()
-	for bci.CurrentHash != nil {
-		block := bci.Next()
-		fmt.Printf("Prev. hash: %x\n", block.PrevBlockHash)
-		fmt.Printf("Hash: %x\n", block.Hash)
-		fmt.Printf("Nonce: %x\n", block.Nonce)
-		pow := NewProofOfWork(block)
-		fmt.Printf("PoW: %s\n", strconv.FormatBool(pow.Validate()))
-		fmt.Println()
-	}
-}
-
-func (cli *CLI) send(from, to string, amount int) {
-	bc := NewBlockchain()
-	defer bc.Db.Close()
-
-	tx := NewUTXOTransaction(from, to, amount, bc)
-	bc.MineBlock([]*Transaction{tx})
-	fmt.Println("send success!")
 }
