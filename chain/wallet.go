@@ -66,8 +66,8 @@ func ValidateAddress(address string) bool {
 	return bytes.Compare(actualChecksum, targetChecksum) == 0
 }
 
-func checksum(paylooad []byte) []byte {
-	firstSHA := sha256.Sum256(paylooad)
+func checksum(payload []byte) []byte {
+	firstSHA := sha256.Sum256(payload)
 	secondSHA := sha256.Sum256(firstSHA[:])
 	return secondSHA[:addressChecksumLen]
 }
