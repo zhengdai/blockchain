@@ -14,7 +14,10 @@ const usage = `
 Usage:
   getbalance -address ADDRESS - Get Banlance of ADDRESS
   createblockchain -address ADDRESs - Create a blockchain and send genesis block reward to ADDRESS
+  createwallet - Generates a new key-pair and saves it into the wallet file
+  listaddresses - Lists all addresses from the wallet file
   printchain - Print all the blocks of the blockchain
+  reindexutxo - Rebuilds the UTXO set
   send -from FROM -to TO -amount AMONT - Send AMOUNT of coins from FROM address to TO
 `
 
@@ -38,6 +41,7 @@ func (cli *CLI) Run() {
 	listAddressesCmd := flag.NewFlagSet("listaddresses", flag.ExitOnError)
 	sendCmd := flag.NewFlagSet("send", flag.ExitOnError)
 	printChainCmd := flag.NewFlagSet("printchain", flag.ExitOnError)
+	reindexUTXOCmd := flag.NewFlagSet("reindexutxo", flag.ExitOnError)
 
 	getBalanceAddress := getBalanceCmd.String("address", "", "The address to get balance for")
 	createBlockchainAddress := createBlockchainCmd.String("address", "", "The address to send genesis block reward to")
@@ -73,6 +77,11 @@ func (cli *CLI) Run() {
 		}
 	case "printchain":
 		err := printChainCmd.Parse(os.Args[2:])
+		if err != nil {
+			log.Panic(err)
+		}
+	case "reindex":
+		err := reindexUTXOCmd.Parse(os.Args[2:])
 		if err != nil {
 			log.Panic(err)
 		}
@@ -113,5 +122,9 @@ func (cli *CLI) Run() {
 			os.Exit(1)
 		}
 		cli.send(*sendFrom, *sendTo, *sendAmount)
+	}
+
+	if reindexUTXOCmd.Parsed() {
+		cli.reindexUTXO()
 	}
 }
