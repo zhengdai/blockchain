@@ -10,10 +10,7 @@ import (
 	"log"
 )
 
-const version = byte(0x00)
-
-const walletFile = "wallet.dat"
-
+const Version = byte(0x00)
 const addressChecksumLen = 4
 
 type Wallet struct {
@@ -50,7 +47,7 @@ func HashPubKey(pubKey []byte) []byte {
 
 func (w Wallet) GetAddress() []byte {
 	pubKeyHash := HashPubKey(w.PublicKey)
-	versionedPayload := append([]byte{version}, pubKeyHash...)
+	versionedPayload := append([]byte{Version}, pubKeyHash...)
 	checksum := checksum(versionedPayload)
 	fullPayload := append(versionedPayload, checksum...)
 	address := Base58Encode(fullPayload)

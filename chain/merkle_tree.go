@@ -18,8 +18,8 @@ func NewMerkleTree(data [][]byte) *MerkleTree {
 		data = append(data, data[len(data)-1])
 	}
 	for _, datum := range data {
-		node := NewMerkleNode(nil, nil.datum)
-		nodes = append(nodes, node)
+		node := NewMerkleNode(nil, nil, datum)
+		nodes = append(nodes, *node)
 	}
 
 	//每层生成
@@ -27,7 +27,7 @@ func NewMerkleTree(data [][]byte) *MerkleTree {
 		var newLevel []MerkleNode
 		for j := 0; j < len(nodes); j += 2 {
 			node := NewMerkleNode(&nodes[j], &nodes[j+1], nil)
-			newLevel = append(newLevel, node)
+			newLevel = append(newLevel, *node)
 		}
 		nodes = newLevel
 	}
